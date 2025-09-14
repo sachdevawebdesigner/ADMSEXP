@@ -1,43 +1,60 @@
-DROP TABLE IF Exists FeePayments;
-CREATE TABLE FeePayment (
-    payment_id INT PRIMARY KEY,
+DROP TABLE IF EXISTS StudentEnrollments;
+
+CREATE TABLE StudentEnrollments (
+    enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
     student_name VARCHAR(100) NOT NULL,
-    amount DECIMAL(10,2) CHECK (amount > 0),
-    payment_date DATE NOT NULL
+    course_id VARCHAR(10) NOT NULL,
+    enrollment_date DATE NOT NULL,
+    CONSTRAINT unique_student_course UNIQUE (student_name, course_id)
 );
 
-START TRANSACTION;
+INSERT INTO StudentEnrollments (student_name, course_id, enrollment_date)
+VALUES
+('Ashish', 'CSE101', '2024-07-01'),
+('Smaran', 'CSE102', '2024-07-01'),
+('Vaibhav', 'CSE103', '2024-07-01');
 
-INSERT INTO FeePayment VALUES (1, 'Ashish', 5000.00, '2024-06-01');
-INSERT INTO FeePayment VALUES (2, 'Smaran', 4500.00, '2024-06-02');
-INSERT INTO FeePayment VALUES (3, 'Vaibhav', 5500.00, '2024-06-03');
+SELECT * FROM StudentEnrollments;
+
+START TRANSACTION;
+INSERT INTO StudentEnrollments (student_name, course_id, enrollment_date)
+VALUES ('Rohan', 'CSE104', '2024-07-01');
+
+START TRANSACTION;
+INSERT INTO StudentEnrollments (student_name, course_id, enrollment_date)
+VALUES ('Rohan', 'CSE105', '2024-07-01');
 
 COMMIT;
 
-SELECT * FROM FeePayment;
+START TRANSACTION;
+SELECT * FROM StudentEnrollments
+WHERE student_name = 'Ashish' AND course_id = 'CSE101'
+FOR UPDATE;
 
 START TRANSACTION;
+UPDATE StudentEnrollments
+SET enrollment_date = '2024-08-01'
+WHERE student_name = 'Ashish' AND course_id = 'CSE101';
 
-INSERT INTO FeePayment VALUES (7, 'Sneha', 4700.00, '2024-06-08');
-INSERT INTO FeePayment VALUES (8, 'Kiran', 4900.00, '2024-06-09');
-
-ROLLBACK;
-
-SELECT * FROM FeePayment;
-
-START TRANSACTION;
-
-INSERT INTO FeePayment VALUES (8, 'Arjun', 4900.00, '2024-06-09');
-
-INSERT INTO FeePayment VALUES (9, 'Ram', 4600.00, '2024-06-10');
-
-ROLLBACK;
-
-SELECT * FROM FeePayment;
-
-START TRANSACTION;
-INSERT INTO FeePayment VALUES (7, 'Sneha', 4700.00, '2024-06-08');
-INSERT INTO FeePayment VALUES (8, 'Arjun', 4900.00, '2024-06-09');
+COMMIT;
 COMMIT;
 
-SELECT * FROM FeePayment;
+START TRANSACTION;
+SELECT * FROM StudentEnrollments
+WHERE student_name = 'Smaran' AND course_id = 'CSE102'
+FOR UPDATE;
+UPDATE StudentEnrollments
+SET enrollment_date = '2024-09-01'
+WHERE student_name = 'Smaran' AND course_id = 'CSE102';
+COMMIT;
+
+START TRANSACTION;
+SELECT * FROM StudentEnrollments
+WHERE student_name = 'Smaran' AND course_id = 'CSE102'
+FOR UPDATE;
+UPDATE StudentEnrollments
+SET enrollment_date = '2024-10-01'
+WHERE student_name = 'Smaran' AND course_id = 'CSE102';
+COMMIT;
+
+SELECT * FROM StudentEnrollments;
