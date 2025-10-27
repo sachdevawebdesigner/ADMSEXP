@@ -1,0 +1,47 @@
+// Base class: Person
+class Person {
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  // Method to display basic info
+  displayInfo() {
+    return `Name: ${this.name}, Age: ${this.age}`;
+  }
+}
+
+// Subclass: Student (extends Person)
+class Student extends Person {
+  constructor(name, age, course) {
+    super(name, age); // Call parent constructor
+    this.course = course;
+  }
+
+  // Overriding displayInfo() to include course info
+  displayInfo() {
+    return `${super.displayInfo()}, Course: ${this.course}`;
+  }
+}
+
+// Subclass: Teacher (extends Person)
+class Teacher extends Person {
+  constructor(name, age, subject) {
+    super(name, age);
+    this.subject = subject;
+  }
+
+  // Overriding displayInfo() to include subject info
+  displayInfo() {
+    return `${super.displayInfo()}, Subject: ${this.subject}`;
+  }
+}
+
+// --- Demonstration ---
+
+const student1 = new Student("Alice Johnson", 20, "Computer Science");
+const teacher1 = new Teacher("Mr. Smith", 40, "Mathematics");
+
+console.log("=== Person Class Hierarchy Example ===");
+console.log(student1.displayInfo());
+console.log(teacher1.displayInfo());
