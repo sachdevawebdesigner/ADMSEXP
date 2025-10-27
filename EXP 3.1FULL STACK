@@ -1,0 +1,35 @@
+import React from "react";
+
+// Reusable ProductCard Component
+function ProductCard({ name, price, inStock }) {
+  return (
+    <div
+      style={{
+        border: "1px solid #ccc",
+        borderRadius: "12px",
+        padding: "16px",
+        margin: "12px",
+        width: "250px",
+        textAlign: "center",
+        backgroundColor: "#f8f8f8",
+        boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+      }}
+    >
+      <h2 style={{ color: "#333" }}>{name}</h2>
+      <p style={{ fontSize: "18px", margin: "8px 0" }}>
+        💰 Price: <strong>₹{price}</strong>
+      </p>
+      <p
+        style={{
+          color: inStock ? "green" : "red",
+          fontWeight: "bold",
+          margin: "6px 0",
+        }}
+      >
+        {inStock ? "✅ In Stock" : "❌ Out of Stock"}
+      </p>
+    </div>
+  );
+}
+
+export default ProductCard;
