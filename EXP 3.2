@@ -1,0 +1,163 @@
+import React, { useState } from "react";
+
+function App() {
+  // Initial book list
+  const [books, setBooks] = useState([
+    { title: "The Great Gatsby", author: "F. Scott Fitzgerald" },
+    { title: "1984", author: "George Orwell" },
+    { title: "To Kill a Mockingbird", author: "Harper Lee" },
+  ]);
+
+  // Form state for adding a new book
+  const [newTitle, setNewTitle] = useState("");
+  const [newAuthor, setNewAuthor] = useState("");
+
+  // Search query
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Add new book
+  const handleAddBook = (e) => {
+    e.preventDefault();
+    if (newTitle.trim() === "" || newAuthor.trim() === "") return;
+
+    const newBook = { title: newTitle.trim(), author: newAuthor.trim() };
+    setBooks([...books, newBook]);
+
+    // Clear inputs
+    setNewTitle("");
+    setNewAuthor("");
+  };
+
+  // Remove book
+  const handleRemoveBook = (index) => {
+    const updatedBooks = books.filter((_, i) => i !== index);
+    setBooks(updatedBooks);
+  };
+
+  // Filtered books based on search
+  const filteredBooks = books.filter(
+    (book) =>
+      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      book.author.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div
+      style={{
+        maxWidth: "700px",
+        margin: "50px auto",
+        padding: "20px",
+        border: "1px solid #ccc",
+        borderRadius: "12px",
+        boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+        backgroundColor: "#fafafa",
+      }}
+    >
+      <h1 style={{ textAlign: "center", color: "#333" }}>
+        📚 Library Management
+      </h1>
+
+      {/* Search Bar */}
+      <input
+        type="text"
+        placeholder="Search by title or author..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        style={{
+          width: "100%",
+          padding: "10px",
+          margin: "10px 0 20px",
+          borderRadius: "8px",
+          border: "1px solid #bbb",
+        }}
+      />
+
+      {/* Add New Book Form */}
+      <form
+        onSubmit={handleAddBook}
+        style={{ display: "flex", gap: "10px", marginBottom: "20px" }}
+      >
+        <input
+          type="text"
+          placeholder="Book Title"
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          style={{
+            flex: "1",
+            padding: "8px",
+            borderRadius: "8px",
+            border: "1px solid #bbb",
+          }}
+        />
+        <input
+          type="text"
+          placeholder="Author"
+          value={newAuthor}
+          onChange={(e) => setNewAuthor(e.target.value)}
+          style={{
+            flex: "1",
+            padding: "8px",
+            borderRadius: "8px",
+            border: "1px solid #bbb",
+          }}
+        />
+        <button
+          type="submit"
+          style={{
+            backgroundColor: "#007bff",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            padding: "10px 16px",
+            cursor: "pointer",
+          }}
+        >
+          Add
+        </button>
+      </form>
+
+      {/* Book List */}
+      {filteredBooks.length === 0 ? (
+        <p style={{ textAlign: "center", color: "#777" }}>No books found.</p>
+      ) : (
+        <ul style={{ listStyle: "none", padding: "0" }}>
+          {filteredBooks.map((book, index) => (
+            <li
+              key={index}
+              style={{
+                backgroundColor: "#fff",
+                margin: "10px 0",
+                padding: "12px 16px",
+                borderRadius: "10px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+              }}
+            >
+              <div>
+                <strong>{book.title}</strong> <br />
+                <small style={{ color: "#666" }}>by {book.author}</small>
+              </div>
+              <button
+                onClick={() => handleRemoveBook(index)}
+                style={{
+                  backgroundColor: "#dc3545",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "6px 10px",
+                  cursor: "pointer",
+                }}
+              >
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+export default App;
