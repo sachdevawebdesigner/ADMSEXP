@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive SVG Drawing Tool</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f5f6fa;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    svg {
+      border: 2px solid #333;
+      background-color: white;
+      cursor: crosshair;
+      margin-top: 20px;
+    }
+
+    .instructions {
+      color: #555;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Interactive SVG Drawing Tool</h1>
+  <p class="instructions">Click and drag inside the box to draw rectangles. Release to finish drawing.</p>
+
+  <!-- SVG Canvas -->
+  <svg id="drawingArea" width="700" height="400"></svg>
+
+  <script>
+    const svg = document.getElementById("drawingArea");
+
+    let isDrawing = false;
+    let startX, startY;
+    let currentRect = null;
+
+    // When mouse is pressed down: start drawing
+    svg.addEventListener("mousedown", (e) => {
+      isDrawing = true;
+
+      // Get mouse position relative to SVG
+      const rect = svg.getBoundingClientRect();
+      startX = e.clientX - rect.left;
+      startY = e.clientY - rect.top;
+
+      // Create a new rectangle element
+      currentRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      currentRect.setAttribute("x", startX);
+      currentRect.setAttribute("y", startY);
+      currentRect.setAttribute("width", 0);
+      currentRect.setAttribute("height", 0);
+      currentRect.setAttribute("stroke", "black");
+      currentRect.setAttribute("stroke-width", "2");
+      currentRect.setAttribute("fill", "rgba(0, 150, 255, 0.3)");
+
+      svg.appendChild(currentRect);
+    });
+
+    // While mouse is moving: update rectangle dimensions
+    svg.addEventListener("mousemove", (e) => {
+      if (!isDrawing) return;
+
+      const rect = svg.getBoundingClientRect();
+      const currentX = e.clientX - rect.left;
+      const currentY = e.clientY - rect.top;
+
+      const width = currentX - startX;
+      const height = currentY - startY;
+
+      // Adjust for negative drag direction
+      currentRect.setAttribute("x", width < 0 ? currentX : startX);
+      currentRect.setAttribute("y", height < 0 ? currentY : startY);
+      currentRect.setAttribute("width", Math.abs(width));
+      currentRect.setAttribute("height", Math.abs(height));
+    });
+
+    // When mouse is released: stop drawing
+    svg.addEventListener("mouseup", () => {
+      isDrawing = false;
+      currentRect = null;
+    });
+
+    // Optional: stop drawing if mouse leaves the SVG area
+    svg.addEventListener("mouseleave", () => {
+      isDrawing = false;
+      currentRect = null;
+    });
+  </script>
+</body>
+</html>
