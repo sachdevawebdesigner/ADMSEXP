@@ -1,0 +1,45 @@
+import React from 'react';
+import './App.css';
+
+function App() {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <h1>🚀 React App Dockerized with Multi-Stage Build</h1>
+        <p>This app is served using Nginx inside a Docker container!</p>
+      </header>
+    </div>
+  );
+}
+
+export default App;
+src/App.css
+css
+Copy code
+.App {
+  text-align: center;
+  background-color: #282c34;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.App-header h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+src/index.js
+javascript
+Copy code
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
