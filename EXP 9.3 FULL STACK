@@ -1,0 +1,95 @@
+1️⃣ Backend: Node.js/Express App
+
+Folder: backend/
+File: server.js
+
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+app.use(cors());
+app.use(express.json());
+
+app.get("/api", (req, res) => {
+  res.json({ message: "Hello from Node.js backend on AWS EC2!" });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+
+Backend Commands:
+
+npm init -y
+npm install express cors
+node server.js
+
+
+Test locally:
+http://localhost:5000/api
+
+2️⃣ Frontend: React App
+
+Folder: frontend/
+File: src/App.js
+
+import React, { useEffect, useState } from "react";
+
+function App() {
+  const [data, setData] = useState("");
+
+  useEffect(() => {
+    fetch("http://<ALB-DNS-NAME>/api")
+      .then((res) => res.json())
+      .then((data) => setData(data.message))
+      .catch((err) => console.error(err));
+  }, []);
+
+  return (
+    <div style={{ textAlign: "center", marginTop: "20%" }}>
+      <h1>🌐 Full Stack App on AWS</h1>
+      <h3>{data || "Loading..."}</h3>
+    </div>
+  );
+}
+
+export default App;
+
+
+Frontend Build Commands:
+
+npm install
+npm run build
+
+
+You can host this frontend build in:
+
+Another EC2 instance (using Nginx)
+
+Or S3 + CloudFront (recommended for scalability)
+
+3️⃣ Deploy Backend on AWS EC2
+
+Launch 2 EC2 instances (Amazon Linux 2 or Ubuntu).
+
+SSH into each instance:
+
+sudo yum update -y
+sudo yum install -y nodejs git
+git clone <your_repo_url>
+cd backend
+npm install
+node server.js
+
+
+Verify:
+
+curl http://localhost:5000/api
+
+
+Should return:
+
+{"message":"Hello from Node.js backend on AWS EC2!"}
