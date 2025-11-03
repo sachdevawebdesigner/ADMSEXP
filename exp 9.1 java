@@ -1,0 +1,72 @@
+Part A: Dependency Injection in Spring (Java-Based Configuration)
+Course.java
+package com.example.springdi;
+
+public class Course {
+    private String courseName;
+
+    public Course(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+}
+
+Student.java
+package com.example.springdi;
+
+public class Student {
+    private Course course;
+
+    // Constructor injection
+    public Student(Course course) {
+        this.course = course;
+    }
+
+    public void showCourse() {
+        System.out.println("Enrolled in course: " + course.getCourseName());
+    }
+}
+
+AppConfig.java
+package com.example.springdi;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public Course course() {
+        return new Course("Spring Framework");
+    }
+
+    @Bean
+    public Student student() {
+        return new Student(course());
+    }
+}
+
+MainApp.java
+package com.example.springdi;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class MainApp {
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+
+        Student student = context.getBean(Student.class);
+        student.showCourse();
+
+        context.close();
+    }
+}
+
+
+ Output:
+
+Enrolled in course: Spring Framework
