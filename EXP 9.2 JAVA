@@ -1,0 +1,108 @@
+ Part B: Hibernate Application for Student CRUD Operations
+Student.java
+package com.example.hibernatecrud;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "students")
+public class Student {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "email")
+    private String email;
+
+    public Student() {}
+
+    public Student(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    // Getters and setters
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getEmail() { return email; }
+
+    public void setName(String name) { this.name = name; }
+    public void setEmail(String email) { this.email = email; }
+}
+
+hibernate.cfg.xml
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/testdb</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">yourpassword</property>
+
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
+        <property name="show_sql">true</property>
+        <property name="hbm2ddl.auto">update</property>
+
+        <mapping class="com.example.hibernatecrud.Student"/>
+    </session-factory>
+</hibernate-configuration>
+
+StudentCRUD.java
+package com.example.hibernatecrud;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+import java.util.List;
+
+public class StudentCRUD {
+    public static void main(String[] args) {
+        SessionFactory factory = new Configuration()
+                .configure("hibernate.cfg.xml")
+                .addAnnotatedClass(Student.class)
+                .buildSessionFactory();
+
+        Session session = factory.getCurrentSession();
+
+        try {
+            // CREATE
+            session.beginTransaction();
+            Student s1 = new Student("Alice", "alice@example.com");
+            session.save(s1);
+            session.getTransaction().commit();
+
+            // READ
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+            List<Student> students = session.createQuery("from Student").getResultList();
+            for (Student s : students) {
+                System.out.println(s.getId() + ": " + s.getName() + " - " + s.getEmail());
+            }
+            session.getTransaction().commit();
+
+            // UPDATE
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+            Student st = session.get(Student.class, 1);
+            st.setEmail("updated@example.com");
+            session.getTransaction().commit();
+
+            // DELETE
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+            Student delStudent = session.get(Student.class, 1);
+            session.delete(delStudent);
+            session.getTransaction().commit();
+
+        } finally {
+            factory.close();
+        }
+    }
+}
