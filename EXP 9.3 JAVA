@@ -1,0 +1,122 @@
+ Part C: Transaction Management Using Spring + Hibernate
+Account.java
+package com.example.bankapp.entity;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "accounts")
+public class Account {
+    @Id
+    private int id;
+    private String holderName;
+    private double balance;
+
+    public Account() {}
+
+    public Account(int id, String holderName, double balance) {
+        this.id = id;
+        this.holderName = holderName;
+        this.balance = balance;
+    }
+
+    // Getters and setters
+    public int getId() { return id; }
+    public String getHolderName() { return holderName; }
+    public double getBalance() { return balance; }
+
+    public void setBalance(double balance) { this.balance = balance; }
+}
+
+BankService.java
+package com.example.bankapp.service;
+
+import com.example.bankapp.entity.Account;
+import jakarta.transaction.Transactional;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class BankService {
+
+    @Autowired
+    private SessionFactory sessionFactory;
+
+    @Transactional
+    public void transferMoney(int fromId, int toId, double amount) {
+        Session session = sessionFactory.getCurrentSession();
+
+        Account fromAcc = session.get(Account.class, fromId);
+        Account toAcc = session.get(Account.class, toId);
+
+        if (fromAcc.getBalance() < amount) {
+            throw new RuntimeException("Insufficient balance!");
+        }
+
+        fromAcc.setBalance(fromAcc.getBalance() - amount);
+        toAcc.setBalance(toAcc.getBalance() + amount);
+
+        session.update(fromAcc);
+        session.update(toAcc);
+    }
+}
+
+SpringConfig.java
+package com.example.bankapp.config;
+
+import org.springframework.context.annotation.*;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import javax.sql.DataSource;
+import com.zaxxer.hikari.HikariDataSource;
+
+@Configuration
+@ComponentScan("com.example.bankapp")
+@EnableTransactionManagement
+public class SpringConfig {
+
+    @Bean
+    public DataSource dataSource() {
+        HikariDataSource ds = new HikariDataSource();
+        ds.setJdbcUrl("jdbc:mysql://localhost:3306/bankdb");
+        ds.setUsername("root");
+        ds.setPassword("yourpassword");
+        return ds;
+    }
+
+    @Bean
+    public LocalSessionFactoryBean sessionFactory() {
+        LocalSessionFactoryBean factory = new LocalSessionFactoryBean();
+        factory.setDataSource(dataSource());
+        factory.setPackagesToScan("com.example.bankapp.entity");
+        return factory;
+    }
+}
+
+MainApp.java
+package com.example.bankapp;
+
+import com.example.bankapp.config.SpringConfig;
+import com.example.bankapp.service.BankService;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class MainApp {
+    public static void main(String[] args) {
+        AnnotationConfigApplicationContext context =
+                new AnnotationConfigApplicationContext(SpringConfig.class);
+
+        BankService bankService = context.getBean(BankService.class);
+
+        try {
+            bankService.transferMoney(1, 2, 500.00);
+            System.out.println("Transaction successful!");
+        } catch (Exception e) {
+            System.out.println("Transaction failed: " + e.getMessage());
+        }
+
+        context.close();
+    }
+}
